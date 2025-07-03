@@ -1,4 +1,4 @@
-# repo-template-k8s
+# repo-template
 
 - Repository template, managed by [copier](https://github.com/copier-org/copier)!
 
@@ -7,8 +7,8 @@
 ### Creating a repository from template
 
 - [Install copier](https://copier.readthedocs.io/en/stable/#installation)
-- Createa new (empty) repository and clone it
-- Run `copier copy <repo-template-url> <new-repo-path>`
+- Declare your repository in [repository factory](https://github.com/kemadev/infrastructure-components/tree/main/deploy/github/30-repo/main.go), make a PR and wait for it to be merged and deployed
+- Run `copier copy https://github.com/kemadev/repo-template <new-repo-path>`
 - Commit and push!
 
 ### Updating a repository from template
