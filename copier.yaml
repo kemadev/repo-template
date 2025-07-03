@@ -1,4 +1,5 @@
 _subdirectory: go-k8s
+_answers_file: .copier-answers.yaml
 
 vcs_provider:
   type: str
