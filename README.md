@@ -17,3 +17,7 @@
 - Run `copier update --answers-file config/copier/.copier-answers.yml`
 - Resolve any conflicts, see [copier's doc](https://copier.readthedocs.io/en/stable/updating/)
 - Commit and push!
+
+### Notes
+
+- Repository is intentionally not marked as template, this is to encourage using `copier` to create new repositories from it
