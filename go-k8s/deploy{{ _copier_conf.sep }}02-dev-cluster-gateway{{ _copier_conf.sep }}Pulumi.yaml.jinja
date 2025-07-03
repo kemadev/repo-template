@@ -1,0 +1,6 @@
+name: {{ vcs_server_host | regex_replace('[^a-zA-Z0-9-]', '-') | regex_replace('-+', '-') }}-{{ vcs_namespace | regex_replace('[^a-zA-Z0-9-]', '-') | regex_replace('-+', '-') }}-{{ vcs_repo | regex_replace('[^a-zA-Z0-9-]', '-') | regex_replace('-+', '-') }}-deploy-02-dev-cluster-gateway
+description: Dev cluster creation for {{ vcs_repo }}
+runtime: go
+config: {}
+backend:
+  url: file://./pulumi-backend

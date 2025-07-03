@@ -1,0 +1,36 @@
+_subdirectory: go-k8s
+
+vcs_provider:
+  type: str
+  help: VCS provider
+  default: github
+  choices:
+    - github
+    - gitea
+
+codeowner_default:
+  type: str
+  help: Default codeowner
+  default: '@kemadev/maintainers'
+
+vcs_url_scheme:
+  type: str
+  help: Scheme used to access VCS repository
+  choices:
+    - https://
+    - ssh://
+  default: https://
+
+vcs_server_host:
+  type: str
+  help: VCS server hostname
+  default: github.com
+
+vcs_namespace:
+  type: str
+  help: Entity owning VCS repository
+  default: kemadev
+
+vcs_repo:
+  type: str
+  help: VCS repository name
