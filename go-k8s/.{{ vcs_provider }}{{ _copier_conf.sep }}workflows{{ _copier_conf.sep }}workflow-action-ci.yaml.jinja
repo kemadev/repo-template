@@ -34,7 +34,7 @@ jobs:
         id: checkout
         uses: actions/checkout@v4
       - name: Set git safe directory
-        run: git config --global --add safe.directory {% raw %}${{ github.workspace }}{% endraw %}
+        run: git config --global --add safe.directory {% raw %}"/__w/{{ github.repository }}"{% endraw %}
       - name: Workflows lint
         id: workflow-lint
         run: kema-runner gha
