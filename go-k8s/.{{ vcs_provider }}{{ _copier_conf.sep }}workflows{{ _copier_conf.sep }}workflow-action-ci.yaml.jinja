@@ -26,10 +26,8 @@ jobs:
     container:
       image: ghcr.io/kemadev/ci-cd-runner:latest
       credentials:
-{% raw %}
-        username: ${{ github.actor }}
-        password: ${{ secrets.github_token }}
-{% endraw %}
+{% raw %}        username: ${{ github.actor }}
+        password: ${{ secrets.github_token }}{% endraw %}
     steps:
       - name: Checkout
         id: checkout
