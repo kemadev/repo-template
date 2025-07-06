@@ -38,8 +38,9 @@ jobs:
         run: git config --global --add safe.directory "${GITHUB_WORKSPACE//\/home\/runner\/work\//\/__w\/}"
       - name: Login to GitHub Packages
         env:
+          USERNAME: ${{ github.actor }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: echo "${GITHUB_TOKEN}" | docker login ghcr.io --username gha --password-stdin
+        run: echo "${GITHUB_TOKEN}" | docker login ghcr.io --username ${USERNAME} --password-stdin
       - name: Create git secrets
         shell: bash
         env:
