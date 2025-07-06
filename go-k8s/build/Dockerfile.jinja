@@ -73,7 +73,7 @@ RUN --mount=type=secret,id=gitcreds \
 	cp /run/secrets/gitcreds /root/.netrc && \
 	go mod download -x
 
-FROM base AS build
+FROM --platform=${BUILDPLATFORM} base AS build
 
 RUN --mount=type=cache,target=/root/go/pkg \
 	--mount=type=cache,target=/root/.cache \
