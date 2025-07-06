@@ -24,16 +24,16 @@ jobs:
     concurrency:
       group: go-release
     steps:
+      - name: Start buildkitd
+        run: |
+          nohup buildkitd > /tmp/buildkitd.log 2>&1 &
+          sleep 5
       - name: Checkout
         id: checkout
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
           fetch-tags: true
-      - name: Start buildkitd
-        run: |
-          nohup buildkitd > /tmp/buildkitd.log 2>&1 &
-          sleep 5
       - name: Set git safe directory
         run: git config --global --add safe.directory "${GITHUB_WORKSPACE//\/home\/runner\/work\//\/__w\/}"
       - name: Login to GitHub Packages
