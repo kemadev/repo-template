@@ -51,6 +51,5 @@ jobs:
         id: go-release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          BUILDKIT_HOST: tcp://127.0.0.1:1234
         run: |
           kema-runner release
