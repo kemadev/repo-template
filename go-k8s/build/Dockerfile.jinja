@@ -22,18 +22,11 @@ RUN mkdir -p /root/go
 # TODO Add renovate tracking
 FROM --platform=${BUILDPLATFORM} docker.io/alpine:3.21.3 AS clean-deps
 
-# Docker buildx ARGs
-ARG TARGETOS
-ARG TARGETARCH
-# Disable C compatability, pass build arg ENABLE_CGO=1 to enable
-ARG ENABLE_CGO=0
-
 WORKDIR /deps
 
 COPY --link --from=go-deps /usr/local/go /usr/local/go
 COPY --link --from=go-deps /root/go /root/go
 
-ENV CGO_ENABLED=${ENABLE_CGO} GOOS=${TARGETOS} GOARCH=${TARGETARCH}
 ENV PATH="/root/go/bin:/usr/local/go/bin:${PATH}"
 
 # TODO Add renovate tracking
@@ -65,6 +58,14 @@ ENTRYPOINT ["air", "-c", "config/air/.air.toml"]
 
 FROM --platform=${BUILDPLATFORM} clean-deps AS base
 
+# Docker buildx ARGs
+ARG TARGETOS
+ARG TARGETARCH
+
+ARG ENABLE_CGO=0
+
+ENV CGO_ENABLED=${ENABLE_CGO} GOOS=${TARGETOS} GOARCH=${TARGETARCH}
+
 RUN --mount=type=secret,id=gitcreds \
 	--mount=type=cache,target=/root/go/pkg \
 	--mount=type=bind,source=go.mod,target=go.mod \
@@ -73,8 +74,6 @@ RUN --mount=type=secret,id=gitcreds \
 	go mod download -x
 
 FROM base AS build
-
-WORKDIR /app
 
 RUN --mount=type=cache,target=/root/go/pkg \
 	--mount=type=cache,target=/root/.cache \
