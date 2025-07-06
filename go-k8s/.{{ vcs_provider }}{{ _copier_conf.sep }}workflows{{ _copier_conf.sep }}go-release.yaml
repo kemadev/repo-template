@@ -30,12 +30,12 @@ jobs:
         with:
           fetch-depth: 0
           fetch-tags: true
-      - name: Set git safe directory
-        run: git config --global --add safe.directory "${GITHUB_WORKSPACE//\/home\/runner\/work\//\/__w\/}"
       - name: Start buildkitd
         run: |
           nohup buildkitd > /tmp/buildkitd.log 2>&1 &
           sleep 5
+      - name: Set git safe directory
+        run: git config --global --add safe.directory "${GITHUB_WORKSPACE//\/home\/runner\/work\//\/__w\/}"
       - name: Login to GitHub Packages
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
