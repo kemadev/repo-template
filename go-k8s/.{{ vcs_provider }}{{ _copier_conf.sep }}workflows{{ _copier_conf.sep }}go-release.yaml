@@ -40,7 +40,7 @@ jobs:
         env:
           USERNAME: ${{ github.actor }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: echo "${GITHUB_TOKEN}" | docker login ghcr.io --username ${USERNAME} --password-stdin
+        run: echo "${GITHUB_TOKEN}" | docker login ghcr.io --username "${USERNAME}" --password-stdin
       - name: Create git secrets
         shell: bash
         env:
