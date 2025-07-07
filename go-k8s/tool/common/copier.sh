@@ -7,23 +7,21 @@ CONFIG_PATH="config/copier/.copier-answers.yml"
 
 USAGE="Usage: $(basename "${BASH_SOURCE[0]}") [command]
 Commands:
-  copy    Copy files from a template repository.
-  update  Update files from a template repository.
+  copy    Copy files from template repository (new repository initialization).
+  update  Update files from template repository.
   -h, --help  Show this help message.
 "
 
 function go_to_git_root() {
 	local GIT_ROOT
 	GIT_ROOT="$(git rev-parse --show-toplevel)"
-	if [ -n "${GIT_ROOT}" ]
-	then
+	if [ -n "${GIT_ROOT}" ]; then
 		cd "${GIT_ROOT}"
 	else
 		echo "Error: Not a git repository."
 		exit 1
 	fi
 }
-
 
 function main() {
 	go_to_git_root
