@@ -7,6 +7,7 @@ import (
 	"net/url"
 	"os"
 	"os/exec"
+	"path"
 	"strings"
 	"syscall"
 
@@ -216,7 +217,7 @@ func runGoTasks(args []string) error {
 		for _, mod := range mods {
 			slog.Debug("Updating Go module", slog.String("mod", mod))
 			cmd := exec.Command("go", "get", "-u", "./...")
-			cmd.Dir = mod
+			cmd.Dir = path.Dir(mod)
 			cmd.Stdout = os.Stdout
 			cmd.Stderr = os.Stderr
 			if err := cmd.Run(); err != nil {
@@ -240,7 +241,7 @@ func runGoTasks(args []string) error {
 		for _, mod := range mods {
 			slog.Debug("Tidying Go module", slog.String("mod", mod))
 			cmd := exec.Command("go", "mod", "tidy")
-			cmd.Dir = mod
+			cmd.Dir = path.Dir(mod)
 			cmd.Stdout = os.Stdout
 			cmd.Stderr = os.Stderr
 			if err := cmd.Run(); err != nil {
