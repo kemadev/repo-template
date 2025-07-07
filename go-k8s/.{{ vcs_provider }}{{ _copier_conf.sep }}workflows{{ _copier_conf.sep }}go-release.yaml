@@ -54,6 +54,8 @@ jobs:
         run: |
           kema-runner release
       - name: Clean up
+        when: always
+        shell: bash
         run: |
           rm -f /tmp/gitcreds
           docker logout ghcr.io
