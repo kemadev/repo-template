@@ -53,3 +53,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           kema-runner release
+      - name: Clean up
+        run: |
+          rm -f /tmp/gitcreds
+          docker logout ghcr.io
