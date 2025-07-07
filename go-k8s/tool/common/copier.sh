@@ -12,6 +12,19 @@ Commands:
   -h, --help  Show this help message.
 "
 
+function check_dependencies() {
+	if ! command -v copier &>/dev/null; then
+		echo "Error: 'copier' command not found. Please install it first."
+		echo "See: https://github.com/copier-org/copier"
+		exit 1
+	fi
+
+	if ! command -v git &>/dev/null; then
+		echo "Error: 'git' command not found. Please install it first."
+		exit 1
+	fi
+}
+
 function go_to_git_root() {
 	local GIT_ROOT
 	GIT_ROOT="$(git rev-parse --show-toplevel)"
@@ -24,6 +37,7 @@ function go_to_git_root() {
 }
 
 function main() {
+	check_dependencies
 	go_to_git_root
 
 	local command="${1:-}"
