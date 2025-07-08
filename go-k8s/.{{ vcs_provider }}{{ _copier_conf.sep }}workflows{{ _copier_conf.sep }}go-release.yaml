@@ -54,7 +54,7 @@ jobs:
         run: |
           kema-runner release
       - name: Clean up
-        when: always
+        if: always()
         shell: bash
         run: |
           rm -f /tmp/gitcreds
