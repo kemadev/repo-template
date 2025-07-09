@@ -27,7 +27,6 @@ jobs:
       - name: Start buildkitd
         run: |
           nohup buildkitd > /tmp/buildkitd.log 2>&1 &
-          sleep 5
       - name: Checkout
         id: checkout
         uses: actions/checkout@v4
