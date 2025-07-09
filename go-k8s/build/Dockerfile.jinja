@@ -85,6 +85,20 @@ RUN --mount=type=cache,target=/root/go/pkg \
 	go build -ldflags='-s -w' -o /usr/local/bin/app ./cmd/main
 
 # hadolint ignore=DL3007
+FROM gcr.io/distroless/static-debian12:nonroot AS goreleaser
+
+LABEL org.opencontainers.image.authors="{{ vcs_namespace }}"
+LABEL org.opencontainers.image.url="ghcr.io/{{ vcs_namespace }}/{{ vcs_repo }}"
+LABEL org.opencontainers.image.documentation="https://{{ vcs_server_host }}/{{ vcs_namespace }}/{{ vcs_repo }}"
+LABEL org.opencontainers.image.source="https://{{ vcs_server_host }}/{{ vcs_namespace }}/{{ vcs_repo }}"
+LABEL org.opencontainers.image.vendor="{{ vcs_namespace }}"
+LABEL org.opencontainers.image.licenses="MPL-2.0"
+
+COPY {{ vcs_repo }} /app
+
+CMD ["/app"]
+
+# hadolint ignore=DL3007
 FROM gcr.io/distroless/static-debian12:nonroot AS main
 
 LABEL org.opencontainers.image.authors="{{ vcs_namespace }}"
