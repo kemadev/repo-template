@@ -97,7 +97,7 @@ RUN --mount=type=bind,source=doc/antora-playbook.yaml,target=antora-playbook.yam
 # TODO Add renovate tracking
 FROM docker.io/nginx:1.29.0 AS doc-serve
 
-COPY --from=docs /src/build/site /usr/share/nginx/html
+COPY --from=doc-build /src/build/site /usr/share/nginx/html
 
 # hadolint ignore=DL3007
 FROM gcr.io/distroless/static-debian12:nonroot AS goreleaser
