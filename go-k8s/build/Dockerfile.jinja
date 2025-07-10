@@ -93,7 +93,7 @@ RUN npm i -g @antora/cli@3.1 @antora/site-generator@3.1
 WORKDIR /src
 
 COPY . .
-RUN mv doc/antora-local-playbook.yaml antora-local-playbook.yaml && antora antora-local-playbook.yaml
+RUN mv config/antora/antora-local-playbook.yaml antora-local-playbook.yaml && antora antora-local-playbook.yaml
 
 # TODO Add renovate tracking
 FROM docker.io/nginx:1.29.0 AS doc-serve
