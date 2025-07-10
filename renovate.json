@@ -25,6 +25,9 @@
     ],
     "vulnerabilityFixStrategy": "highest"
   },
+  "copier": {
+    "versioning": "semver-coerced"
+  },
   "postUpdateOptions": [
     "gomodTidy",
     "gomodUpdateImportPaths"
