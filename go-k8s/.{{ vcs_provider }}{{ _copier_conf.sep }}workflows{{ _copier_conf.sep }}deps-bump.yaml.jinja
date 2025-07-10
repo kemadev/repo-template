@@ -28,8 +28,8 @@ jobs:
       - uses: actions/create-github-app-token@v2
         id: app-token
         with:
-          app-id: {% raw %}${{ vars.APP_ID }}{% endraw %}
-          private-key: {% raw %}${{ secrets.PRIVATE_KEY }}{% endraw %}
+          app-id: {% raw %}${{ vars.RENOVATE_APP_ID }}{% endraw %}
+          private-key: {% raw %}${{ secrets.RENOVATE_APP_PRIVATE_KEY }}{% endraw %}
       - name: Get Renovate config
         env:
           GIT_REPOSITORY: {% raw %}${{ github.repository }}{% endraw %}
