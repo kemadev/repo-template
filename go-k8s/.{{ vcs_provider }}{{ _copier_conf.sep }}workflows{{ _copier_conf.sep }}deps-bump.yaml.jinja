@@ -29,4 +29,5 @@ jobs:
           RENOVATE_PLATFORM: {{ vcs_provider }}
           RENOVATE_REPOSITORIES: "['{{ vcs_namespace }}/{{ vcs_repo }}']"
           RENOVATE_CONFIG_FILE: config/renovate/renovate.yaml
+          RENOVATE_PR_HOURLY_LIMIT: 10
         run: /usr/local/sbin/renovate-entrypoint.sh
