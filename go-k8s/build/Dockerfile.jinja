@@ -91,8 +91,8 @@ RUN npm i -g @antora/cli@3.1 @antora/site-generator@3.1
 
 WORKDIR /src
 
-RUN --mount=type=bind,source=doc/antora-playbook.yaml,target=antora-playbook.yaml \
-	antora antora-playbook.yaml
+RUN --mount=type=bind,source=.,target=. \
+	antora doc/antora-playbook.yaml
 
 # TODO Add renovate tracking
 FROM docker.io/nginx:1.29.0 AS doc-serve
