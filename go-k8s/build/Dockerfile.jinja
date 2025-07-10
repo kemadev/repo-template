@@ -87,12 +87,14 @@ RUN --mount=type=cache,target=/root/go/pkg \
 FROM --platform=${BUILDPLATFORM} docker.io/alpine:3.21.3 AS doc-build
 
 RUN apk add --no-cache git npm
+# TODO Add renovate tracking
 RUN npm i -g @antora/cli@3.1 @antora/site-generator@3.1
 
 WORKDIR /src
 
-RUN --mount=type=bind,source=.,target=. \
-	antora doc/antora-playbook.yaml
+RUN --mount=type=bind,source=doc,target=src \
+	git init . && git commit --allow-empty -m init && \
+	antora antora-local-playbook.yaml
 
 # TODO Add renovate tracking
 FROM docker.io/nginx:1.29.0 AS doc-serve
