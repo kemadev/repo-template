@@ -1,5 +1,5 @@
 module.exports = {
-  endpoint: "https://api.github.com",
+  endpoint: "{{ vcs_url_scheme }}{{ "api." + vcs_server_host if vcs_provider == "github" else vcs_server_host + "/api/v1" }}",
   platform: "{{ vcs_provider }}",
   repositories: ["{{ vcs_name }}/{{ vcs_repo }}"],
 };
