@@ -94,7 +94,7 @@ WORKDIR /src
 
 RUN --mount=type=cache,source=doc,target=. \
 	git init . && \
-	git config --global user.email "local@{{ vcs_namespace }}/{{ vcs_repo }}" && \
+	git config --global user.email "local@{{ vcs_namespace }}-{{ vcs_repo }}.tld" && \
 	git config --global user.name "{{ vcs_namespace }} {{ vcs_repo }}" && \
 	git commit --allow-empty -m init && \
 	antora antora-local-playbook.yaml
