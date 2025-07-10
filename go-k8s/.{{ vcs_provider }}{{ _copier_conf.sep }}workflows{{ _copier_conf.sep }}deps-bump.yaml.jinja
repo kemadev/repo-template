@@ -27,5 +27,5 @@ jobs:
           RENOVATE_TOKEN: {% raw %}${{ secrets.github_token }}{% endraw %}
           RENOVATE_ENDPOINT: {{ vcs_url_scheme }}{{ "api." + vcs_server_host if vcs_provider == "github" else vcs_server_host + "/api/v1" }}
           RENOVATE_PLATFORM: {{ vcs_provider }}
-          RENOVATE_REPOSITORIES: "[{{ vcs_name }}/{{ vcs_repo }}]"
+          RENOVATE_REPOSITORIES: "[{{ vcs_namespace }}/{{ vcs_repo }}]"
         run: /usr/local/sbin/renovate-entrypoint.sh
