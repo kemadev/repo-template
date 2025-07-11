@@ -94,7 +94,7 @@ LABEL org.opencontainers.image.licenses="MPL-2.0"
 
 COPY {{ vcs_repo }} /app
 
-CMD ["/app"]
+ENTRYPOINT ["/app"]
 
 # hadolint ignore=DL3007
 FROM gcr.io/distroless/static-debian12:nonroot AS main
@@ -108,4 +108,4 @@ LABEL org.opencontainers.image.licenses="MPL-2.0"
 
 COPY --link --from=build /usr/local/bin/app /app
 
-CMD ["/app"]
+ENTRYPOINT ["/app"]
