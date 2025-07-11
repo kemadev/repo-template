@@ -13,9 +13,7 @@ jobs:
   deps-bump:
     name: Dependencies bump
     permissions:
-      contents: write
-      issues: write
-      pull-requests: write
+      contents: read
     runs-on: ubuntu-latest
     container:
       image: ghcr.io/renovatebot/renovate:latest
@@ -26,7 +24,7 @@ jobs:
       - name: Dependencies bump
         id: deps-bump
         env:
-          RENOVATE_TOKEN: {% raw %}${{ secrets.github_token }}{% endraw %}
+          RENOVATE_TOKEN: {% raw %}${{ secrets.RENOVATE_PAT }}{% endraw %}
           RENOVATE_ENDPOINT: {{ vcs_url_scheme }}{{ "api." + vcs_server_host if vcs_provider == "github" else vcs_server_host + "/api/v1" }}
           RENOVATE_PLATFORM: {{ vcs_provider }}
           RENOVATE_REPOSITORIES: "['{{ vcs_namespace }}/{{ vcs_repo }}']"
