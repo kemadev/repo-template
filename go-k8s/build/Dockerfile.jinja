@@ -83,7 +83,6 @@ RUN --mount=type=cache,target=/root/go/pkg \
 	--mount=type=bind,source=.,target=. \
 	go build -ldflags='-s -w' -o /usr/local/bin/app ./cmd/main
 
-# hadolint ignore=DL3007
 FROM gcr.io/distroless/static-debian12:nonroot AS goreleaser
 
 LABEL org.opencontainers.image.authors="{{ vcs_namespace }}"
