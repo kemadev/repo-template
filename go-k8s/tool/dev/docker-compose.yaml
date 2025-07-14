@@ -24,7 +24,7 @@ services:
       - netrc
     environment:
       GO_MAIN_FILE_DIR: ./cmd/main
-    restart: no
+    restart: always
     develop:
       watch:
         - action: sync+restart
