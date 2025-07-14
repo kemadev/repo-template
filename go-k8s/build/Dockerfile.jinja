@@ -41,9 +41,6 @@ ARG GOARM64=v8.2
 
 ENV CGO_ENABLED=${CGO_ENABLED} GOOS=${TARGETOS} GOARCH=${TARGETARCH} GOARM64=${GOARM64} GOAMD64=${GOAMD64}
 
-# Use manually mounted volume for dev, providing hot-reload possibility
-WORKDIR /app
-
 COPY --link --from=clean-deps /usr/local/go /usr/local/go
 
 # hadolint ignore=DL3018
