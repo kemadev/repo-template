@@ -47,15 +47,16 @@ WORKDIR /app
 COPY --link --from=clean-deps /usr/local/go /usr/local/go
 
 # hadolint ignore=DL3018
-RUN apk add --no-cache git sudo && adduser -D -u 1000 nonroot && echo "nonroot ALL=(ALL) NOPASSWD: ALL" >/etc/sudoers.d/nonroot && chmod 0440 /etc/sudoers.d/nonroot && chown nonroot:nonroot /usr/local/go
+RUN apk add --no-cache git sudo jq && adduser -D -u 1000 nonroot && echo "nonroot ALL=(ALL) NOPASSWD: ALL" >/etc/sudoers.d/nonroot && chmod 0440 /etc/sudoers.d/nonroot && chown nonroot:nonroot /usr/local/go
 
 ENV PATH="/home/nonroot/go/bin:/usr/local/go/bin:${PATH}"
 
 USER 1000:1000
 
-RUN go install github.com/air-verse/air@latest
+COPY . /app
 
-ENTRYPOINT ["air", "-c", "config/air/.air.toml"]
+# Build and run
+ENTRYPOINT ["sh", "-c", "cp /run/secrets/git_netrc ~/.netrc && go build -o /app ./cmd/${GO_MAIN_FILE_DIR} ; echo 'Now waiting for code changes...' && sleep infinity"]
 
 FROM --platform=${BUILDPLATFORM} clean-deps AS base
 
