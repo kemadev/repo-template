@@ -53,10 +53,12 @@ ENV PATH="/home/nonroot/go/bin:/usr/local/go/bin:${PATH}"
 
 USER 1000:1000
 
-COPY . /app
+WORKDIR /src
+
+COPY . /src
 
 # Build and run
-ENTRYPOINT ["sh", "-c", "cp /run/secrets/git_netrc ~/.netrc && go build -o /app ./cmd/${GO_MAIN_FILE_DIR} ; echo 'Now waiting for code changes...' && sleep infinity"]
+ENTRYPOINT ["sh", "-c", "cp /run/secrets/git_netrc ~/.netrc && go build -o /app ./cmd/${GO_MAIN_FILE_DIR} && /app"]
 
 FROM --platform=${BUILDPLATFORM} clean-deps AS base
 
