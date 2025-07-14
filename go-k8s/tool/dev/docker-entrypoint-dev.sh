@@ -25,7 +25,6 @@ main() {
 
     echo "Now sleeping."
     sleep infinity
-    exit 1
 }
 
 main "${@}"
