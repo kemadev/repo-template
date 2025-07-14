@@ -12,5 +12,5 @@
 !tool
 !web
 
+*.md
 !*.go
-*PURPOSE.md
