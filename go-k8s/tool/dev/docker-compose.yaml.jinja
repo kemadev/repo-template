@@ -34,6 +34,7 @@ services:
       APP_VERSION: dev
       APP_NAMESPACE: whatever
       OTEL_ENDPOINT_URL: http://localhost:4317
+      OTEL_EXPORTER_COMPRESSION: gzip
 
     restart: always
     develop:
