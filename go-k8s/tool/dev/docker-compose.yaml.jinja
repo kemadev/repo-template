@@ -121,8 +121,8 @@ services:
       OPENSEARCH_DASHBOARDS_PORT_NUMBER: 5601
       OPENSEARCH_DASHBOARDS_PASSWORD: dev
     ports:
+      - 5601:5601
       - 9200:9200
-      - 9300:9300
     networks:
       - app-main
     restart: always
