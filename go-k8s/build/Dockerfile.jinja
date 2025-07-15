@@ -85,9 +85,9 @@ USER 1000:1000
 
 RUN git config --global --add safe.directory /src
 
-COPY --link --from=build /usr/local/bin/app /app
-
 COPY . .
+
+COPY --link --from=build /usr/local/bin/app /app
 
 ENTRYPOINT ["/src/tool/dev/docker-entrypoint-dev.sh"]
 
