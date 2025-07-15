@@ -55,7 +55,7 @@ services:
       service: app-template
     profiles:
       - debug
-    command:
+    entrypoint:
       - dlv
       - --listen=:40000
       - --headless=true
