@@ -84,7 +84,6 @@ services:
     profiles:
       - never
     environment:
-      OPENSEARCH_BIND_ADDRESS: '::'
       OPENSEARCH_CLUSTER: {{ vcs_repo }}
       OPENSEARCH_NODE_NAME: dev
       OPENSEARCH_HTTP_PORT_NUMBER: 9200
