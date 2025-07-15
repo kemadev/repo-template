@@ -87,7 +87,7 @@ RUN apk add --no-cache git sudo && \
 	chmod 0440 /etc/sudoers.d/nonroot
 
 COPY --link --from=go-deps /usr/local/go /usr/local/go
-COPY --link --chown=nonroot:nonroot --from=go-deps /home/nonroot/go /home/nonroot/go
+COPY --link --chown=nonroot:nonroot --from=go-deps /root/go /home/nonroot/go
 
 ENV PATH="/home/nonroot/go/bin:/usr/local/go/bin:${PATH}"
 
