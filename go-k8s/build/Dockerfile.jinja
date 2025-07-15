@@ -87,7 +87,7 @@ WORKDIR /src
 
 COPY --link --from=build /usr/local/bin/app /app
 
-COPY . /src
+COPY . .
 
 ENTRYPOINT ["/src/tool/dev/docker-entrypoint-dev.sh"]
 
