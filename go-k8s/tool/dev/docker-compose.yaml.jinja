@@ -36,6 +36,7 @@ services:
       HTTP_SERVE_PORT: 8080
       HTTP_READ_TIMEOUT: 5
       HTTP_WRITE_TIMEOUT: 10
+      # Set to a positive value to enable metrics export
       METRICS_EXPORT_INTERVAL: -1
       TRACES_SAMPLE_RATIO: 1
     ports:
@@ -73,6 +74,7 @@ services:
       - SYS_PTRACE
 
 ---
+# Provide Jaeger for tracing
 services:
   jaeger:
     image: jaegertracing/jaeger:latest
@@ -87,6 +89,7 @@ services:
     restart: always
 
 ---
+# Provide Postgresql for SQL, enable by setting according profile
 volumes:
   postgresql:
     driver: local
@@ -109,6 +112,7 @@ services:
 
 
 ---
+# Provide Valkey for NoSQL, enable by setting according profile
 volumes:
   valkey:
     driver: local
@@ -129,6 +133,7 @@ services:
     restart: always
 
 ---
+# Provide Opensearch for search, enable by setting according profile
 networks:
   opensearch:
     driver: bridge
