@@ -30,7 +30,7 @@ COPY --link --from=go-deps /root/go /root/go
 
 ENV PATH="/root/go/bin:/usr/local/go/bin:${PATH}"
 
-FROM --platform=${BUILDPLATFORM} clean-deps AS base
+FROM clean-deps AS base
 
 WORKDIR /src
 
@@ -51,14 +51,14 @@ RUN --mount=type=secret,id=netrc \
 	cp /run/secrets/netrc /root/.netrc && \
 	go mod download -x
 
-FROM --platform=${BUILDPLATFORM} base AS build
+FROM base AS build
 
 RUN --mount=type=cache,target=/root/go/pkg \
 	--mount=type=cache,target=/root/.cache \
 	--mount=type=bind,source=.,target=. \
 	go build -ldflags='-s -w' -o /usr/local/bin/app ./cmd/main
 
-FROM --platform=${BUILDPLATFORM} base AS debug-build
+FROM base AS debug-build
 
 RUN --mount=type=cache,target=/root/go/pkg \
 		--mount=type=cache,target=/root/.cache \
