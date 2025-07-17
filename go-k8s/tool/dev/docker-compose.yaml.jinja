@@ -61,11 +61,8 @@ services:
       service: app-template
     profiles:
       - debug
-    entrypoint:
-      - dlv
-      - dap
-      - --listen
-      - :50000
+    build:
+      target: debug
     ports:
       - 50000:50000
     security_opt:
