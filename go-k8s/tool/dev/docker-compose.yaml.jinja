@@ -3,6 +3,10 @@ name: {{ vcs_namespace }}-{{ vcs_repo }}
 networks:
   app:
     driver: bridge
+    enable_ipv6: true
+    ipam:
+       config:
+         - subnet: 2001:db8::/64
 
 secrets:
   netrc:
