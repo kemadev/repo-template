@@ -271,6 +271,7 @@ linters:
         - i int
         - T any
         - r *http.Request
+        - r *http.Response
         - w http.ResponseWriter
         - c context.Context
     wsl:
