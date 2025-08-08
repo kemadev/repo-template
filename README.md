@@ -24,7 +24,8 @@
 
 ## Notes for maintainers
 
-- This repository does not use automatic release, you need to create tags and releases manually
+- This repository does not use automatic release, you need to create tags and releases manually.
+- You can use this one-liner to do so (obviously change `+1` directive in printf according to SemVer)
 
   ```sh
   export NEXT_TAG="$(git tag | grep -E '^v?[0-9]+\.[0-9]+\.[0-9]+$' | sort -V | tail -n 1 | sed 's|v||g' | awk -F. '{printf "v%d.%d.%d", $1, $2, $3+1}')" && git tag "${NEXT_TAG}" && git push --tags && gh release create "${NEXT_TAG}" --title "${NEXT_TAG}" --notes "Release ${NEXT_TAG}"
