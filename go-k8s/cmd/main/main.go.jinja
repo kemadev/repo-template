@@ -16,10 +16,10 @@ import (
 	"github.com/kemadev/go-framework/pkg/client"
 	"github.com/kemadev/go-framework/pkg/config"
 	"github.com/kemadev/go-framework/pkg/convenience/headval"
-	"github.com/kemadev/go-framework/pkg/convenience/local"
 	"github.com/kemadev/go-framework/pkg/convenience/log"
 	"github.com/kemadev/go-framework/pkg/convenience/otel"
 	"github.com/kemadev/go-framework/pkg/convenience/render"
+	"github.com/kemadev/go-framework/pkg/convenience/resp"
 	"github.com/kemadev/go-framework/pkg/convenience/trace"
 	"github.com/kemadev/go-framework/pkg/encoding"
 	flog "github.com/kemadev/go-framework/pkg/log"
@@ -32,7 +32,6 @@ import (
 	"github.com/valkey-io/valkey-go"
 	"go.opentelemetry.io/otel/attribute"
 	semconv "go.opentelemetry.io/otel/semconv/v1.34.0"
-	oteltrace "go.opentelemetry.io/otel/trace"
 )
 
 const packageName = "{{ vcs_provider }}/{{ vcs_repo }}/{{ vcs_repo }}/cmd/main"
@@ -98,7 +97,7 @@ func main() {
 
 			r.Handle(
 				otel.WrapHandler(
-					"GET /foo/{bar}",
+					"GET /bar/{baz}",
 					http.HandlerFunc(ExampleHandler),
 				),
 			)
@@ -127,27 +126,20 @@ func main() {
 }
 
 func ExampleHandler(w http.ResponseWriter, r *http.Request) {
-	// Get user from context (set by AuthMiddleware)
-	user := local.Get(r.Context(), "user")
-
-	// Get span context for logging
 	span := trace.Span(r.Context())
-	spanCtx := span.SpanContext()
-	fmt.Printf("[HANDLER] TraceID: %s, SpanID: %s, User: %v\n",
-		spanCtx.TraceID().String(),
-		spanCtx.SpanID().String(),
-		user,
-	)
-
-	bag := trace.Baggage(r.Context())
-	span.AddEvent(
-		"handling this...",
-		oteltrace.WithAttributes(semconv.UserID(bag.Member(string(semconv.UserIDKey)).Value())),
-	)
-
 	span.SetAttributes(attribute.String("bar", r.PathValue("bar")))
 
-	fmt.Fprintf(w, "Hello, %v! TraceID: %s", user, spanCtx.TraceID().String())
+	type exampleResp struct {
+		Name  string
+		Attrs []string
+	}
+
+	resp.JSON(w, exampleResp{
+		Name: "foo",
+		Attrs: []string{
+			"bar",
+		},
+	})
 }
 
 func ExampleTemplateRender(
