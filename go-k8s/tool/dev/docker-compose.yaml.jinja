@@ -26,16 +26,16 @@ services:
     secrets:
       - netrc
     environment:
-      # Not all projects under kemadev are private, but convenient not to set all exceptions
-      GOPRIVATE: "github.com/kemadev/*"
+      # Not all projects under {{ vcs_namespace }} are private, but convenient not to set all exceptions
+      GOPRIVATE: "github.com/{{ vcs_namespace }}/*"
       KEMA_RUNTIME_ENVIRONMENT: dev
-      KEMA_RUNTIME_APP_NAME: go-framework
+      KEMA_RUNTIME_APP_NAME: {{ vcs_repo }}
       KEMA_RUNTIME_APP_VERSION: dev
       KEMA_RUNTIME_APP_NAMESPACE: whatever
-      KEMA_OBSERVABILITY_ENDPOINT_URL: http://kemadev-go-framework-jaeger-1:4317
-      KEMA_CLIENT_DATABASE_CLIENT_ADDRESS: "kemadev-go-framework-valkey-database-1:6379"
+      KEMA_OBSERVABILITY_ENDPOINT_URL: http://{{ vcs_namespace }}-{{ vcs_repo }}-jaeger-1:4317
+      KEMA_CLIENT_DATABASE_CLIENT_ADDRESS: "{{ vcs_namespace }}-{{ vcs_repo }}-valkey-database-1:6379"
       KEMA_CLIENT_DATABASE_PASSWORD: "dev"
-      KEMA_CLIENT_CACHE_CLIENT_ADDRESS: "kemadev-go-framework-valkey-cache-1:6379"
+      KEMA_CLIENT_CACHE_CLIENT_ADDRESS: "{{ vcs_namespace }}-{{ vcs_repo }}-valkey-cache-1:6379"
       KEMA_CLIENT_CACHE_PASSWORD: "dev"
       # Set this to a strictly positive value to export metrics to stdout
       KEMA_OBSERVABILITY_METRICS_EXPORT_INTERVAL: 0
