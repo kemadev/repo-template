@@ -1,60 +1,199 @@
 /*
-{{ vcs_repo }} serves {{ vcs_repo }} microservice.
-It is deployed in Kubernetes and serves over HTTP.
+Copyright 2025 kemadev
+SPDX-License-Identifier: MPL-2.0
 */
+
 package main
 
 import (
+	"errors"
+	"fmt"
 	"log/slog"
+	"net/http"
 	"os"
+	"time"
 
+	"github.com/kemadev/go-framework/pkg/client"
 	"github.com/kemadev/go-framework/pkg/config"
-	"github.com/kemadev/go-framework/pkg/http"
-	"github.com/kemadev/go-framework/pkg/log"
-	"github.com/kemadev/go-framework/pkg/route"
-	"github.com/kemadev/go-framework/pkg/serve"
+	"github.com/kemadev/go-framework/pkg/convenience/headval"
+	"github.com/kemadev/go-framework/pkg/convenience/local"
+	"github.com/kemadev/go-framework/pkg/convenience/log"
+	"github.com/kemadev/go-framework/pkg/convenience/otel"
+	"github.com/kemadev/go-framework/pkg/convenience/render"
+	"github.com/kemadev/go-framework/pkg/convenience/trace"
+	"github.com/kemadev/go-framework/pkg/encoding"
+	flog "github.com/kemadev/go-framework/pkg/log"
+	"github.com/kemadev/go-framework/pkg/maxbytes"
+	"github.com/kemadev/go-framework/pkg/monitoring"
+	"github.com/kemadev/go-framework/pkg/router"
+	"github.com/kemadev/go-framework/pkg/server"
+	"github.com/kemadev/go-framework/pkg/timeout"
+	"github.com/kemadev/go-framework/web"
+	"github.com/valkey-io/valkey-go"
+	"go.opentelemetry.io/otel/attribute"
+	semconv "go.opentelemetry.io/otel/semconv/v1.34.0"
+	oteltrace "go.opentelemetry.io/otel/trace"
 )
 
+const packageName = "{{ vcs_provider }}/{{ vcs_repo }}/{{ vcs_repo }}/cmd/main"
+
 func main() {
-	// `http.Run()` only returns on init / shutdown failures, where otel logger isn't available
-	fallbackLogger := log.CreateFallbackLogger()
-
 	// Get app config
-	conf, err := config.NewConfig()
+	configManager := config.NewManager()
+
+	conf, err := configManager.Get()
 	if err != nil {
-		fallbackLogger.Error(
-			"run",
-			slog.String("Body", "config failure"),
-			// TODO use semconv value once released, see https://opentelemetry.io/docs/specs/semconv/attributes-registry/error/#error-message
-			slog.String("error.message", err.Error()),
-		)
+		flog.FallbackError(fmt.Errorf("error getting config: %w", err))
 		os.Exit(1)
 	}
 
-	// Create regular routes
-	regularRoutes := route.RoutesToRegister{
-		route.Route{
-			Pattern:     "GET /rolldice/",
-			HandlerFunc: rolldice,
-		},
-		route.Route{
-			Pattern:     "GET /rolldice/{player}",
-			HandlerFunc: rolldice,
-		},
-	}
-
-	// Create routes with dependency injection
-	dependencyRoutes := route.RoutesWithDependencies{}
-
-	// Run HTTP server
-	err = serve.Run(regularRoutes, dependencyRoutes, conf)
+	// Create clients, for use in handlers
+	client, err := client.NewValkeyDBClient(conf.Client.Database)
 	if err != nil {
-		fallbackLogger.Error(
-			"run",
-			slog.String("Body", "http failure"),
-			// TODO use semconv value once released, see https://opentelemetry.io/docs/specs/semconv/attributes-registry/error/#error-message
-			slog.String("error.message", err.Error()),
-		)
+		flog.FallbackError(err)
 		os.Exit(1)
+	}
+	defer client.Close()
+
+	r := router.New()
+
+	// Always protect your routes (you can further customize at handler / group level)
+	r.Use(timeout.NewMiddleware(5 * time.Second))
+	r.Use(maxbytes.NewMiddleware(100000))
+
+	// Add other middlewares
+	r.Use(encoding.DecompressMiddleware)
+	r.Use(encoding.CompressMiddleware)
+
+	// Add monitoring endpoints
+	r.Handle(
+		monitoring.LivenessHandler(
+			func() monitoring.CheckResults { return monitoring.CheckResults{} },
+		),
+	)
+	r.Handle(
+		monitoring.ReadinessHandler(
+			func() monitoring.CheckResults { return monitoring.CheckResults{} },
+		),
+	)
+
+	// Add handlers
+	r.Handle(
+		otel.WrapHandler("GET /foo/{bar}", http.HandlerFunc(ExampleHandler)),
+	)
+
+	r.Handle(
+		otel.WrapHandler(
+			"GET /db",
+			ExampleDBHandler(client),
+		),
+	)
+
+	// Create groups and sub-groups
+	r.Group(func(r *router.Router) {
+		r.Use(timeout.NewMiddleware(2 * time.Second))
+
+		r.Group(func(r *router.Router) {
+			r.Use(maxbytes.NewMiddleware(500000))
+
+			r.Handle(
+				otel.WrapHandler(
+					"GET /foo/{bar}",
+					http.HandlerFunc(ExampleHandler),
+				),
+			)
+		})
+	})
+
+	// Handle static (public) assets
+	r.Handle(
+		otel.WrapHandler(
+			"GET /static/",
+			http.FileServerFS(web.GetStaticFS()).ServeHTTP,
+		),
+	)
+
+	// Handle template assets
+	tmplFS := web.GetTmplFS()
+	renderer, _ := render.New(tmplFS)
+	r.Handle(
+		otel.WrapHandler(
+			"GET /",
+			ExampleTemplateRender(renderer),
+		),
+	)
+
+	server.Run(otel.WrapMux(r, packageName), *conf)
+}
+
+func ExampleHandler(w http.ResponseWriter, r *http.Request) {
+	// Get user from context (set by AuthMiddleware)
+	user := local.Get(r.Context(), "user")
+
+	// Get span context for logging
+	span := trace.Span(r.Context())
+	spanCtx := span.SpanContext()
+	fmt.Printf("[HANDLER] TraceID: %s, SpanID: %s, User: %v\n",
+		spanCtx.TraceID().String(),
+		spanCtx.SpanID().String(),
+		user,
+	)
+
+	bag := trace.Baggage(r.Context())
+	span.AddEvent(
+		"handling this...",
+		oteltrace.WithAttributes(semconv.UserID(bag.Member(string(semconv.UserIDKey)).Value())),
+	)
+
+	span.SetAttributes(attribute.String("bar", r.PathValue("bar")))
+
+	fmt.Fprintf(w, "Hello, %v! TraceID: %s", user, spanCtx.TraceID().String())
+}
+
+func ExampleTemplateRender(
+	tr *render.TemplateRenderer,
+) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		err := tr.Execute(
+			w,
+			// Mind directory name in tmplate FS
+			"tmpl/hello.html",
+			map[string]any{
+				"WorldName": "WoRlD",
+			},
+			headval.MIMETextHTMLCharsetUTF8,
+		)
+		if err != nil {
+			if errors.Is(err, render.ErrTemplateNotFound) {
+				http.NotFound(w, r)
+				return
+			}
+
+			log.Logger(packageName).
+				Error("error rendering template",
+					slog.String(
+						string(semconv.ErrorMessageKey),
+						err.Error(),
+					),
+				)
+			w.WriteHeader(http.StatusInternalServerError)
+		}
+	}
+}
+
+func ExampleDBHandler(client valkey.Client) func(w http.ResponseWriter, r *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
+		err := client.Do(r.Context(), client.B().Set().Key("key").Value(time.Now().String()).Build()).
+			Error()
+		if err != nil {
+			log.ErrLog(packageName, "error db set", err)
+			http.Error(
+				w,
+				http.StatusText(http.StatusInternalServerError),
+				http.StatusInternalServerError,
+			)
+		}
+		w.Write([]byte(http.StatusText(http.StatusOK)))
+		w.WriteHeader(http.StatusOK)
 	}
 }
